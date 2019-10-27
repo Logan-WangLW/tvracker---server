@@ -2,7 +2,6 @@
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 
-const { ShowSchema } = require('./shows');
 mongoose.Promise = global.Promise;
 
 const UserSchema = mongoose.Schema({
@@ -14,21 +13,20 @@ const UserSchema = mongoose.Schema({
   password: {
     type: String,
     required: true
-  },
-  shows: [ShowSchema],
+  }
 });
 
-UserSchema.methods.serialize = function () {
+UserSchema.methods.serialize = function() {
   return {
-    username: this.username || '',
+    username: this.username || ''
   };
 };
 
-UserSchema.methods.validatePassword = function (password) {
+UserSchema.methods.validatePassword = function(password) {
   return bcrypt.compare(password, this.password);
 };
 
-UserSchema.statics.hashPassword = function (password) {
+UserSchema.statics.hashPassword = function(password) {
   return bcrypt.hash(password, 10);
 };
 

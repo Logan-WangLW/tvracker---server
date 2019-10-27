@@ -2,13 +2,13 @@
 
 const { Strategy: LocalStrategy } = require('passport-local');
 
-const { LoginError } = require('./errors');
+const { LoginError } = require('./error');
 const User = require('../models/user');
 
 const localStrategy = new LocalStrategy((username, password, done) => {
   let user;
   User.findOne({ username })
-    .then((result) => {
+    .then(result => {
       user = result;
       if (!user) {
         throw new LoginError();
@@ -16,14 +16,14 @@ const localStrategy = new LocalStrategy((username, password, done) => {
 
       return user.validatePassword(password);
     })
-    .then((passwordIsValid) => {
+    .then(passwordIsValid => {
       if (!passwordIsValid) {
         throw new LoginError();
       }
 
       done(null, user);
     })
-    .catch((err) => {
+    .catch(err => {
       if (err instanceof LoginError) {
         done(null, false);
         return;

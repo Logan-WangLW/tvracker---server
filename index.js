@@ -9,10 +9,11 @@ const { PORT, CLIENT_ORIGIN } = require('./config');
 const { dbConnect } = require('./db-mongoose');
 // const {dbConnect} = require('./db-knex');
 
-const localStrategy = require('./passport/localStrategy');
-const jwtStrategy = require('./passport/jwtStrategy');
+const localStrategy = require('./passport/local');
+const jwtStrategy = require('./passport/jwt');
 
 const authRouter = require('./routes/auth');
+const userRouter = require('./routes/user');
 
 const app = express();
 const jwtAuth = passport.authenticate('jwt', { session: false });
@@ -30,6 +31,10 @@ app.use(
 app.use(express.json());
 passport.use(localStrategy);
 passport.use(jwtStrategy);
+
+// Routers
+app.use('/auth', authRouter);
+app.use('/users', userRouter);
 
 // Custom 404 Not Found Error Handler
 app.use((req, res, next) => {
