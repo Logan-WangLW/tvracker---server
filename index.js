@@ -32,9 +32,10 @@ app.use(express.json());
 passport.use(localStrategy);
 passport.use(jwtStrategy);
 
-// Routers
+// Mount routers
 app.use('/auth', authRouter);
 app.use('/users', userRouter);
+app.use('/register', userRouter);
 
 // Custom 404 Not Found Error Handler
 app.use((req, res, next) => {
