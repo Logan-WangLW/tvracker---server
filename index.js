@@ -14,6 +14,7 @@ const jwtStrategy = require('./passport/jwt');
 
 const authRouter = require('./routes/auth');
 const userRouter = require('./routes/user');
+const showSearchRouter = require('./routes/showsSearch');
 
 const app = express();
 const jwtAuth = passport.authenticate('jwt', { session: false });
@@ -36,6 +37,7 @@ passport.use(jwtStrategy);
 app.use('/auth', authRouter);
 app.use('/users', userRouter);
 app.use('/register', userRouter);
+app.use('/show-search', showSearchRouter);
 
 // Custom 404 Not Found Error Handler
 app.use((req, res, next) => {
