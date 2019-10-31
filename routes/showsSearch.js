@@ -15,7 +15,6 @@ router.use(jwtAuth);
 
 router.put('/', jwtAuth, (req, res, next) => {
   const { search } = req.body;
-
   request(
     {
       method: 'GET',
@@ -26,6 +25,7 @@ router.put('/', jwtAuth, (req, res, next) => {
       json: true
     },
     function(error, response, body) {
+      // console.log(body);
       let shows = body.map(({ show }) => {
         return {
           id: show.id,
@@ -36,8 +36,8 @@ router.put('/', jwtAuth, (req, res, next) => {
           summary: show.summary
         };
       });
-      // console.log('shows after mapping =', shows);
-
+      shows = { shows };
+      // console.log(shows);
       ShowsSearch.findOneAndUpdate({ userId: req.user._id }, shows, {
         new: true,
         upsert: true
