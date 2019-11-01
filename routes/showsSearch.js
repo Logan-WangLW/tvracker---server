@@ -33,7 +33,12 @@ router.put('/', jwtAuth, (req, res, next) => {
           image: show.image,
           status: show.status,
           type: show.type,
-          summary: show.summary
+          summary: show.summary,
+          schedule: show.schedule,
+          url: show.url,
+          officialSite: show.officialSite,
+          premiered: show.premiered,
+          genres: show.genres
         };
       });
       shows = { shows };

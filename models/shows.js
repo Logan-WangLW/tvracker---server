@@ -3,12 +3,15 @@
 const mongoose = require('mongoose');
 
 const ShowSchema = mongoose.Schema({
+  id: Number,
   name: String,
   type: String,
-  image: String,
+  image: Object,
   status: String,
   summary: String,
-  seenEpisodes: [String],
+  region: String,
+  schedule: [String],
+  url: String,
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 });
 
