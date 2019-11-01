@@ -5,16 +5,17 @@ const Show = require('../models/shows');
 
 const router = express.Router();
 const passport = require('passport');
-const request = require('request');
+const request = require('request-promise');
 
-// Protect endpoints using JWT Strategy
-router.use(
-  passport.authenticate('jwt', { session: false, failWithError: true })
-);
+const jwtAuth = passport.authenticate('jwt', {
+  session: false,
+  failWithError: true
+});
+router.use(jwtAuth);
 
 //get all favorites
-router.get('/', (req, res, next) => {
-  Show.find({ userId: req.user.id })
+router.get('/', jwtAuth, (req, res, next) => {
+  Show.find({ userId: req.user._id })
     .then(results => {
       res.json(results);
     })
@@ -23,22 +24,34 @@ router.get('/', (req, res, next) => {
     });
 });
 
-//post/create favorite
-router.post('/:id', (req, res, next) => {
-  //const newObj = { show: req.params.id, userId: req.user.id };
+router.put('/:id', jwtAuth, (req, res, next) => {
   let showId = req.params.id;
   console.log('showId......', showId);
-  request(
-    {
-      method: 'GET',
-      url: `https://api.tvmaze.com/shows/${showId}`,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      json: true
+  request({
+    method: 'GET',
+    url: `https://api.tvmaze.com/shows/${showId}`,
+    headers: {
+      'Content-Type': 'application/json'
     },
-    function(error, response, body) {
-      let newObj = {
+    json: true
+  }).then(body => {
+    console.log('---------reached---------', body);
+    let newObj = {};
+    if (!body.network) {
+      newObj = {
+        id: showId,
+        name: body.name,
+        type: body.type,
+        image: body.image,
+        status: body.status,
+        summary: body.summary,
+        region: 'N/A',
+        schedule: body.schedule.days,
+        url: body.url,
+        userId: req.user._id
+      };
+    } else {
+      newObj = {
         id: showId,
         name: body.name,
         type: body.type,
@@ -50,23 +63,24 @@ router.post('/:id', (req, res, next) => {
         url: body.url,
         userId: req.user._id
       };
-      console.log(newObj);
-      Show.create(newObj)
-        .then(result => {
-          res
-            .location(`${req.originalUrl}/${result.id}`)
-            .status(201)
-            .json(result);
-        })
-        .catch(err => {
-          next(err);
-        });
     }
-  );
+    console.log('newObj-------->', newObj);
+    Show.create(newObj)
+      .then(result => {
+        res
+          .location(`${req.originalUrl}/${result.id}`)
+          .status(201)
+          .json(result);
+      })
+      .catch(err => {
+        next(err);
+      });
+  });
 });
 
 //delete endpoint
-router.delete('/:id', (req, res, next) => {
+//need to pass in _id in database and not the show id
+router.delete('/:id', jwtAuth, (req, res, next) => {
   const id = req.params.id;
   Show.findByIdAndDelete(id)
     .then(() => {
