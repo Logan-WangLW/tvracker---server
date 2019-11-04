@@ -16,6 +16,7 @@ const authRouter = require('./routes/auth');
 const userRouter = require('./routes/user');
 const showSearchRouter = require('./routes/showsSearch');
 const showRouter = require('./routes/shows');
+const episodesRouter = require('./routes/episodes');
 
 const app = express();
 const jwtAuth = passport.authenticate('jwt', { session: false });
@@ -40,6 +41,7 @@ app.use('/users', userRouter);
 app.use('/register', userRouter);
 app.use('/show-search', showSearchRouter);
 app.use('/show', showRouter);
+app.use('/episodes', episodesRouter);
 
 // Custom 404 Not Found Error Handler
 app.use((req, res, next) => {

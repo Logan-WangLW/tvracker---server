@@ -13,7 +13,7 @@ const jwtAuth = passport.authenticate('jwt', {
 });
 router.use(jwtAuth);
 
-//get all favorites
+//get all tracked shows
 router.get('/', jwtAuth, (req, res, next) => {
   Show.find({ userId: req.user._id })
     .then(results => {
@@ -24,6 +24,7 @@ router.get('/', jwtAuth, (req, res, next) => {
     });
 });
 
+//add new show to tracked shows
 router.put('/:id', jwtAuth, (req, res, next) => {
   let showId = req.params.id;
   // console.log('showId......', showId);
