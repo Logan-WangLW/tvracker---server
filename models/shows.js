@@ -19,7 +19,6 @@ ShowSchema.set('timestamps', true);
 ShowSchema.set('toJSON', {
   virtuals: true,
   transform: (doc, result) => {
-    delete result._id;
     delete result.__v;
   }
 });

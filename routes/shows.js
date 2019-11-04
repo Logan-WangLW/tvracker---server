@@ -26,7 +26,7 @@ router.get('/', jwtAuth, (req, res, next) => {
 
 router.put('/:id', jwtAuth, (req, res, next) => {
   let showId = req.params.id;
-  console.log('showId......', showId);
+  // console.log('showId......', showId);
   request({
     method: 'GET',
     url: `https://api.tvmaze.com/shows/${showId}`,
@@ -35,7 +35,7 @@ router.put('/:id', jwtAuth, (req, res, next) => {
     },
     json: true
   }).then(body => {
-    console.log('---------reached---------', body);
+    // console.log('---------reached---------', body);
     let newObj = {};
     if (!body.network) {
       newObj = {
@@ -64,7 +64,7 @@ router.put('/:id', jwtAuth, (req, res, next) => {
         userId: req.user._id
       };
     }
-    console.log('newObj-------->', newObj);
+    // console.log('newObj-------->', newObj);
     Show.create(newObj)
       .then(result => {
         res
