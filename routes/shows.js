@@ -85,7 +85,7 @@ router.delete('/:id', jwtAuth, (req, res, next) => {
   Show.findByIdAndDelete(id)
     .then(() => {
       //console.log('Deleted show:', id);
-      return Show.find({ userId: req.user.id });
+      return Show.find({ userId: req.user._id });
     })
     .then(results => {
       //console.log('Leftover shows:', results);
