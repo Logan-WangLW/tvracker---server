@@ -1,13 +1,12 @@
 'use strict';
 const express = require('express');
-
-const Episode = require('../models/episodes');
-const Show = require('../models/shows');
+const mongoose = require('mongoose');
+const Shows = require('../models/shows');
 
 const router = express.Router();
 const passport = require('passport');
 const request = require('request-promise');
-
+mongoose.set('useFindAndModify', false);
 const jwtAuth = passport.authenticate('jwt', {
   session: false,
   failWithError: true
@@ -15,51 +14,40 @@ const jwtAuth = passport.authenticate('jwt', {
 router.use(jwtAuth);
 
 //append episodes to shows
-router.put('/:id', jwtAuth, (req, res, next) => {
-  let showID = req.params.id;
-  let result;
-  Show.find({ id: showID, userId: req.user._id }).then(body => {
-    if (body[0]) {
-      result = body[0]._id;
-    }
-  });
-  console.log(result);
+router.put('/', jwtAuth, (req, res, next) => {
+  const { id } = req.body;
+  const { showId } = req.body;
 
-  // console.log('showId......', showId);
   request({
     method: 'GET',
-    url: `https://api.tvmaze.com/shows/${showID}/episodes`,
+    url: `https://api.tvmaze.com/shows/${showId}/episodes`,
     headers: {
       'Content-Type': 'application/json'
     },
     json: true
   }).then(body => {
-    // console.log('---------BODY---------', body);
-    //  season: Number,
-    // number: Number,
-    // airstamp: String,
-    // airdate: Date
-    for (let episode of body) {
-      // console.log('---EPISODE----', episode);
-      let newObj = {};
-      newObj = {
-        showId: showID,
+    let episodes = body.map(episode => {
+      return {
+        episodeId: episode.id,
         season: episode.season,
         number: episode.number,
         airstamp: episode.airstamp,
         airdate: episode.airdate
       };
-      // Episode.create(newObj)
-      //   .then(result => {
-      //     res
-      //       .location(`${req.originalUrl}/${result.id}`)
-      //       .status(201)
-      //       .json(result);
-      //   })
-      //   .catch(err => {
-      //     next(err);
-      //   });
-    }
+    });
+    let query = { _id: id };
+    Shows.findOneAndUpdate(
+      query,
+      { episodes: episodes },
+      { new: true, upsert: true }
+    )
+      .then(result => {
+        res
+          .location(`${req.baseUrl}/${result.id}`)
+          .status(201)
+          .json(result);
+      })
+      .catch(err => next(err));
   });
 });
 

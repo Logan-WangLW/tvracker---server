@@ -12,6 +12,15 @@ const ShowSchema = mongoose.Schema({
   region: String,
   schedule: [String],
   url: String,
+  episodes: [
+    {
+      episodeId: Number,
+      season: Number,
+      number: Number,
+      airstamp: String,
+      airdate: Date
+    }
+  ],
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 });
 
